@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+const port=47839,base=`http://127.0.0.1:${port}`;const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:String(port)},stdio:['ignore','pipe','pipe']});let output='';child.stdout.on('data',d=>output+=d);child.stderr.on('data',d=>output+=d);const wait=ms=>new Promise(r=>setTimeout(r,ms));
+try{let ready=false;for(let i=0;i<50;i++){await wait(80);try{if((await fetch(`${base}/api/health`)).ok){ready=true;break}}catch{}}assert.equal(ready,true,output);
+ const routes=['/hub','/biblioteca','/semillas','/semillas/mercado','/habitos','/dashboard','/dashboard/suenos','/dashboard/comunidad','/tools','/experiencia','/styles.css','/js/views.js'];
+ const requests=Array.from({length:180},(_,i)=>fetch(`${base}${routes[i%routes.length]}`).then(async r=>({status:r.status,len:(await r.arrayBuffer()).byteLength})));const started=Date.now();const results=await Promise.all(requests);const elapsed=Date.now()-started;assert.ok(results.every(r=>r.status===200),'stress responses must all be 200');assert.ok(results.every(r=>r.len>100),'stress responses must not be empty');assert.ok(elapsed<15000,`local runtime stress took too long: ${elapsed}ms`);console.log(`Runtime stress passed: ${results.length} concurrent-ish requests across ${routes.length} resources in ${elapsed} ms`);
+}finally{child.kill('SIGTERM');await Promise.race([new Promise(r=>child.once('exit',r)),wait(700)]);if(!child.killed)child.kill('SIGKILL')}

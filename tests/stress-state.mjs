@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+const memory=new Map();globalThis.localStorage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,String(v)),removeItem:k=>memory.delete(k),clear:()=>memory.clear()};
+const {store}=await import(`../public/js/store.js?stress=${Date.now()}`);
+for(let i=0;i<250;i++)store.update(s=>{const key=`2026-08-${String((i%28)+1).padStart(2,'0')}`;s.habitSystem.checkins[key]??={};s.habitSystem.checkins[key][`stress-${i%20}`]=i%2===0;return s});
+for(let i=0;i<80;i++)store.update(s=>{s.visionBoard.items.push({id:`stress-dream-${i}`,title:`Dream ${i}`,category:'Stress',progress:i%101,src:''});return s});
+for(let i=0;i<165;i++)store.update(s=>{const id=`elementos-${String(i+1).padStart(3,'0')}`;if(!s.collection.seeds.includes(id))s.collection.seeds.push(id);return s});
+const snapshot=store.get();assert.equal(snapshot.visionBoard.items.length,80);assert.equal(snapshot.collection.seeds.length,165);assert.ok(Object.keys(snapshot.habitSystem.checkins).length<=28);
+const serialized=memory.get('sod-ecosystem-state-v1');assert.ok(serialized.length<1_500_000,`local state unexpectedly huge: ${serialized.length}`);assert.doesNotThrow(()=>JSON.parse(serialized));
+store.reset();assert.equal(store.get().visionBoard.items.length,0);assert.equal(store.get().collection.seeds.length,0);
+console.log(`State stress test passed: 495+ local mutations, serialization ${(serialized.length/1024).toFixed(1)} KB, reset stable`);

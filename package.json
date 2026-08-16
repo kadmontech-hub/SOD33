@@ -1,0 +1,19 @@
+{
+  "name": "sod-ecosystem",
+  "version": "3.9999.0",
+  "private": true,
+  "type": "module",
+  "description": "SØD Ecosystem V3.9999 — carcasa visual final pre-backend: producto curado, estado local funcional, mobile/desktop, QA y contratos listos para V4",
+  "scripts": {
+    "dev": "node --watch server.mjs",
+    "start": "node server.mjs",
+    "build": "node scripts/build.mjs",
+    "vercel-build": "npm run build",
+    "check": "node scripts/check.mjs",
+    "test": "npm run build && node tests/safe-access.mjs && node tests/domain.mjs && node tests/visual.mjs && node tests/library-v5.mjs && node tests/library-abundant.mjs && node tests/videoteca.mjs && node tests/conversation-ui.mjs && node tests/v3.mjs && node tests/universe-architecture.mjs && node tests/habits-v34.mjs && node tests/seeds-v36.mjs && node tests/dashboard-v37.mjs && node tests/final-shell-v399.mjs && node tests/navigation-audit.mjs && node tests/mobile-css-audit.mjs && node tests/asset-reference-audit.mjs && node tests/accessibility-shell-audit.mjs && node tests/stress-state.mjs && node tests/stress-conversation.mjs && node tests/api-guardrails.mjs && node tests/runtime-routes.mjs && node tests/stress-runtime.mjs && node tests/hub-panorama.mjs && node tests/hub-floating-icons.mjs && node tests/smoke.mjs && node tests/vercel.mjs",
+    "validate": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
